@@ -3,12 +3,13 @@ var bodyParser = require('body-parser');
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./model/todo');
 var {User} = require('./model/user');
+const {ObjectID} = require('mongodb');
 
 var app = express();
 
 app.use(bodyParser.json());
 
-app.post('/todos', (req,res) => {
+app.post('/todos', (req, res) => {
     var todo = new Todo({
         text: req.body.text
     });
@@ -20,17 +21,39 @@ app.post('/todos', (req,res) => {
     });
 });
 
-app.get('/todos', (req,res) => {
-    Todo.find().then((todos)=>{
-        res.send({todos})
+app.get('/todos/:id', (req, res) => {
+    var id = req.params.id;
+    if (!ObjectID.isValid(id)) {
+        res.status(404).send();
+    }
+
+    Todo.findById(id).then((todo) => {
+        if (todo) {
+            res.send(todo);
+        } else {
+            return res.status(404).send();
+        }
+    }, (err) => {
+        res.status(400).send("No todo found");
+    });
+
+})
+
+app.get('/todos', (req, res) => {
+    Todo.find().then((todos) => {
+        res.send({
+            todos
+        })
     }, (err) => {
         res.status(400).send(err);
     });
 });
 
-app.listen(3000,() => {
+app.listen(3000, () => {
     console.log("Server run on port 3000");
 });
 
 
-module.exports = {app};
+module.exports = {
+    app
+};
