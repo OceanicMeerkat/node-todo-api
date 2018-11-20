@@ -6,6 +6,7 @@ var {User} = require('./model/user');
 const {ObjectID} = require('mongodb');
 
 var app = express();
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -49,8 +50,8 @@ app.get('/todos', (req, res) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log("Server run on port 3000");
+app.listen(port, () => {
+    console.log(`Server run on port ${port}`);
 });
 
 
