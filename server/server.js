@@ -1,9 +1,17 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var {mongoose} = require('./db/mongoose');
-var {Todo} = require('./model/todo');
-var {User} = require('./model/user');
-const {ObjectID} = require('mongodb');
+var {
+    mongoose
+} = require('./db/mongoose');
+var {
+    Todo
+} = require('./model/todo');
+var {
+    User
+} = require('./model/user');
+const {
+    ObjectID
+} = require('mongodb');
 
 var app = express();
 const port = process.env.PORT || 3000;
@@ -48,6 +56,29 @@ app.get('/todos', (req, res) => {
     }, (err) => {
         res.status(400).send(err);
     });
+});
+
+app.delete('/todos/:id', (req, res) => {
+    var id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+
+    Todo.findByIdAndRemove(id).then((todo) => {
+        if (todo) {
+            res.send({
+                todo
+            });
+        } else {
+            res.status(404).send(
+                "Todo not found"
+            );
+        }
+    }, (err) => {
+        res.status(400).send();
+    });
+
 });
 
 app.listen(port, () => {
