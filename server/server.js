@@ -12,6 +12,9 @@ const {
 const {
     User
 } = require('./model/user');
+
+const {authenticate} = require('./middleware/authenticate');
+
 const {
     ObjectID
 } = require('mongodb');
@@ -126,6 +129,12 @@ app.post('/users', (req,res) => {
         res.status(400).send(err);
     })
     
+})
+
+
+
+app.get('/users/me',authenticate, (req,res) => {
+    res.send(req.user);
 })
 
 app.listen(port, () => {
