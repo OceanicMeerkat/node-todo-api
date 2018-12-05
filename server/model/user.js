@@ -10,7 +10,7 @@ const bcrypt = require('bcryptjs');
 var UserSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: true,
+        require: true,
         trim: true,
         minlength: 1,
         unique: true,
@@ -42,6 +42,17 @@ UserSchema.methods.toJSON = function () {
 
     return _.pick(userObject, ['_id', 'email']);
 };
+
+UserSchema.methods.removeToken = function (token) { 
+    var user = this;
+    return user.update({
+        $pull: {
+            tokens:{
+                token
+            }
+        }
+    })
+ }
 
 UserSchema.methods.generateAuthToken = function () {
     var user = this;
